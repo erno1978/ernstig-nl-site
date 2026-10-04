@@ -1,2 +1,2 @@
-# erno1978.github.io
-Website content of Ernstig.com
+# ernstig-nl-site
+Website content of Ernstig.nl
