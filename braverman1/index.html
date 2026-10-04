@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Braverman Nature Assessment</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    @media print {
+      .no-print { display: none !important; }
+      body { background-color: white !important; }
+      .print-container { shadow: none !important; border: none !important; }
+      .page-break { page-break-before: always; }
+    }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-800 font-sans min-h-screen">
+
+  <!-- Header -->
+  <header class="bg-indigo-700 text-white py-6 shadow-md no-print">
+    <div class="max-w-5xl mx-auto px-4 flex justify-between items-center">
+      <div>
+        <h1 class="text-2xl font-bold">Braverman Assessment Tool</h1>
+        <p class="text-indigo-200 text-sm">Analyse van Neurotransmitter-Aard en Deficiënties</p>
+      </div>
+      <button onclick="window.print()" id="btnPrintTop" class="hidden bg-indigo-500 hover:bg-indigo-600 text-white px-4 py-2 rounded-lg font-medium shadow transition flex items-center gap-2">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg>
+        Rapport Afdrukken / PDF
+      </button>
+    </div>
+  </header>
+
+  <main class="max-w-5xl mx-auto p-4 md:p-6">
+
+    <!-- INSTELLINGEN / NAAM CLIËNT -->
+    <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200 mb-6 no-print">
+      <h2 class="text-lg font-semibold mb-4 text-slate-700">Cliëntgegevens</h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+          <label class="block text-sm font-medium text-slate-600 mb-1">Naam cliënt</label>
+          <input type="text" id="clientName" placeholder="Bijv. Jan Jansen" class="w-full border border-slate-300 rounded-lg p-2.5 focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-slate-600 mb-1">Datum van afname</label>
+          <input type="date" id="testDate" class="w-full border border-slate-300 rounded-lg p-2.5 focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+        </div>
+      </div>
+    </div>
+
+    <!-- TABBED FORMULIER -->
+    <div id="surveyContainer" class="bg-white rounded-xl shadow-sm border border-slate-200 mb-8 no-print">
+      <div class="border-b border-slate-200 p-4 bg-slate-50 rounded-t-xl">
+        <h2 class="text-xl font-bold text-slate-800">Vragenlijst invullen</h2>
+        <p class="text-sm text-slate-500">Vink alle stellingen aan die op de cliënt van toepassing zijn.</p>
+      </div>
+
+      <!-- Vragen per neurotransmitter -->
+      <form id="bravermanForm" class="p-6">
+        <div id="questionsAccordion" class="space-y-6">
+          <!-- Dynamisch gegenereerd via JS -->
+        </div>
+
+        <div class="mt-8 pt-6 border-t border-slate-200 flex justify-end">
+          <button type="button" onclick="calculateResults()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-6 py-3 rounded-xl shadow-lg transition duration-200 flex items-center gap-2">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+            Bereken & Genereer Rapport
+          </button>
+        </div>
+      </form>
+    </div>
+
+    <!-- RAPPORT SECTIE (Verborgen tot berekening) -->
+    <div id="reportSection" class="hidden space-y-8 print-container">
+      
+      <!-- Rapport Header (Alleen zichtbaar in print of rapport-view) -->
+      <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
+        <div class="flex justify-between items-center border-b pb-4 mb-4">
+          <div>
+            <h2 class="text-3xl font-extrabold text-indigo-900">Braverman Resultaat</h2>
+            <p class="text-slate-500" id="reportClientInfo">Cliënt: - | Datum: -</p>
+          </div>
+          <div class="text-right">
+            <span class="text-xs font-semibold uppercase px-3 py-1 bg-indigo-100 text-indigo-800 rounded-full">Analyse Rapport</span>
+          </div>
+        </div>
+
+        <!-- Bovenste Dashboard: 3 Meters -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 my-6">
+          
+          <!-- Functionaliteit (Snelheid/Sfeer Cirkel) -->
+          <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 flex flex-col items-center">
+            <h3 class="text-sm font-bold uppercase tracking-wider text-slate-600 mb-2">Functionaliteit</h3>
+            <div class="w-48 h-48 relative">
+              <canvas id="functionalityChart"></canvas>
+            </div>
+            <p class="text-xs text-slate-400 mt-2 text-center">Aard Balans (Dopamine, Acetylcholine, GABA, Serotonine)</p>
+          </div>
+
+          <!-- Prestatievermogen (Gauge) -->
+          <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 flex flex-col items-center">
+            <h3 class="text-sm font-bold uppercase tracking-wider text-slate-600 mb-1">Prestatievermogen</h3>
+            <div class="text-2xl font-black text-indigo-700 mb-2" id="prestatieScoreDisplay">0</div>
+            <div class="w-48 h-28 relative">
+              <canvas id="prestatieChart"></canvas>
+            </div>
+            <div class="flex justify-between w-full text-[10px] text-slate-500 px-4 mt-2">
+              <span class="text-red-500 font-bold">ALARM</span>
+              <span class="text-amber-500 font-bold">LAAG</span>
+              <span class="text-yellow-600 font-bold">MATIG</span>
+              <span class="text-emerald-500 font-bold">GOED</span>
+              <span class="text-teal-600 font-bold">IDEAAL</span>
+            </div>
+          </div>
+
+          <!-- Herstelvermogen (Brandstofmeter) -->
+          <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 flex flex-col items-center">
+            <h3 class="text-sm font-bold uppercase tracking-wider text-slate-600 mb-1">Herstelvermogen</h3>
+            <div class="text-2xl font-black text-red-600 mb-2" id="herstelScoreDisplay">0</div>
+            <div class="w-24 h-36 relative">
+              <canvas id="herstelChart"></canvas>
+            </div>
+            <p class="text-xs text-slate-400 mt-2 text-center">Cumulatieve Belasting / Tekorten</p>
+          </div>
+
+        </div>
+
+        <!-- Midden: Staafdiagrammen Neurotransmitters -->
+        <div class="mt-8 border-t pt-6">
+          <h3 class="text-lg font-bold text-slate-800 mb-4">Neurotransmitters Balans & Tekorten</h3>
+          <div class="h-64 w-full">
+            <canvas id="neuroBarChart"></canvas>
+          </div>
+        </div>
+
+        <!-- Onder: Detail Tabel met Positief / Negatief -->
+        <div class="mt-8 border-t pt-6">
+          <h3 class="text-lg font-bold text-slate-800 mb-4">Kenmerken Overzicht</h3>
+          <div class="grid grid-cols-1 md:grid-cols-4 gap-4 text-xs">
+            
+            <!-- Dopamine -->
+            <div class="border rounded-lg p-3 bg-red-50/30 border-red-200">
+              <h4 class="font-bold text-red-700 text-sm mb-2 border-b border-red-200 pb-1">Dopamine</h4>
+              <p class="font-semibold text-emerald-700 mb-1">Positief (Kracht)</p>
+              <ul class="list-disc list-inside space-y-0.5 text-slate-600 mb-3" id="dopaminePosList"></ul>
+              <p class="font-semibold text-red-700 mb-1">Negatief (Klacht)</p>
+              <ul class="list-disc list-inside space-y-0.5 text-slate-600" id="dopamineNegList"></ul>
+            </div>
+
+            <!-- Acetylcholine -->
+            <div class="border rounded-lg p-3 bg-amber-50/30 border-amber-200">
+              <h4 class="font-bold text-amber-700 text-sm mb-2 border-b border-amber-200 pb-1">Acetylcholine</h4>
+              <p class="font-semibold text-emerald-700 mb-1">Positief (Kracht)</p>
+              <ul class="list-disc list-inside space-y-0.5 text-slate-600 mb-3" id="acetylPosList"></ul>
+              <p class="font-semibold text-red-700 mb-1">Negatief (Klacht)</p>
+              <ul class="list-disc list-inside space-y-0.5 text-slate-600" id="acetylNegList"></ul>
+            </div>
+
+            <!-- GABA -->
+            <div class="border rounded-lg p-3 bg-purple-50/30 border-purple-200">
+              <h4 class="font-bold text-purple-700 text-sm mb-2 border-b border-purple-200 pb-1">GABA</h4>
+              <p class="font-semibold text-emerald-700 mb-1">Positief (Kracht)</p>
+              <ul class="list-disc list-inside space-y-0.5 text-slate-600 mb-3" id="gabaPosList"></ul>
+              <p class="font-semibold text-red-700 mb-1">Negatief (Klacht)</p>
+              <ul class="list-disc list-inside space-y-0.5 text-slate-600" id="gabaNegList"></ul>
+            </div>
+
+            <!-- Serotonine -->
+            <div class="border rounded-lg p-3 bg-emerald-50/30 border-emerald-200">
+              <h4 class="font-bold text-emerald-700 text-sm mb-2 border-b border-emerald-200 pb-1">Serotonine</h4>
+              <p class="font-semibold text-emerald-700 mb-1">Positief (Kracht)</p>
+              <ul class="list-disc list-inside space-y-0.5 text-slate-600 mb-3" id="seroPosList"></ul>
+              <p class="font-semibold text-red-700 mb-1">Negatief (Klacht)</p>
+              <ul class="list-disc list-inside space-y-0.5 text-slate-600" id="seroNegList"></ul>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Acties onderaan rapport -->
+      <div class="flex justify-between items-center no-print">
+        <button onclick="scrollToTop()" class="text-slate-500 hover:text-slate-800 text-sm font-medium">
+          &larr; Terug naar vragenlijst
+        </button>
+        <button onclick="window.print()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-2.5 rounded-lg font-bold shadow flex items-center gap-2">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg>
+          Printen / Exporteren naar PDF
+        </button>
+      </div>
+
+    </div>
+
+  </main>
+
+  <script>
+    // Dataset met representatieve Braverman vragen & eigenschappen
+    const bravermanData = {
+      dopamine: {
+        title: "Dopamine (Focus, Motivatie & Daadkracht)",
+        color: "#e11d48", // Rose/Rood
+        posItems: [
+          { id: "d_p1", text: "Snelle beslisser en daadkrachtig", tag: "Power" },
+          { id: "d_p2", text: "Hoge energie en veel uithoudingsvermogen", tag: "Accu" },
+          { id: "d_p3", text: "Sterk zelfvertrouwen en resultaatgericht", tag: "Zelfvertrouwen" },
+          { id: "d_p4", text: "Kan scherp focussen op doelen", tag: "Focus" },
+          { id: "d_p5", text: "Goed werkende stofwisseling", tag: "Stofwisseling" }
+        ],
+        negItems: [
+          { id: "d_n1", text: "Sneller vermoeid / minder energie", tag: "Minder energie" },
+          { id: "d_n2", text: "Moeite met concentratie of focus", tag: "Minder concentratie" },
+          { id: "d_n3", text: "Twijfelachtig of besluiteloos", tag: "Besluiteloos" },
+          { id: "d_n4", text: "Vergeetachtigheid / minder geheugen", tag: "Minder geheugen" },
+          { id: "d_n5", text: "Snel stemmingswisselingen / labiel", tag: "Labiel" },
+          { id: "d_n6", text: "Gevoel van 'door mul zand lopen'", tag: "'Door mul zand lopen'" }
+        ]
+      },
+      acetylcholine: {
+        title: "Acetylcholine (Geheugen, Snelheid & Creativiteit)",
+        color: "#eab308", // Geel/Goud
+        posItems: [
+          { id: "a_p1", text: "Creatief brein, denkt buiten de kaders", tag: "Breincreativiteit" },
+          { id: "a_p2", text: "Ziet snel oplossingen voor complexe problemen", tag: "Oplossingen zien" },
+          { id: "a_p3", text: "Snel reactievermogen en verwerking", tag: "Reactiesnelheid" },
+          { id: "a_p4", text: "Uitstekend geheugen voor feiten en namen", tag: "Herinnering" },
+          { id: "a_p5", text: "Nieuwsgierig en leergierig ingesteld", tag: "Nieuwsgierig" },
+          { id: "a_p6", text: "Speels en sociaal flexibel", tag: "Speels" }
+        ],
+        negItems: [
+          { id: "a_n1", text: "Geen zin om onder de mensen te zijn", tag: "Geen zin in mensen" },
+          { id: "a_n2", text: "Verlies van interesse in hobby's/werk", tag: "Geen interesse" },
+          { id: "a_n3", text: "Zit het liefst passief op de bank", tag: "Graag op eigen bank" },
+          { id: "a_n4", text: "Vermijdt nieuwe uitdagingen", tag: "Geen uitdagingen" },
+          { id: "a_n5", text: "Minder goed onthouden van recente info", tag: "Minder goed geheugen" }
+        ]
+      },
+      gaba: {
+        title: "GABA (Rust, Structuur & Kalmte)",
+        color: "#9333ea", // Paars
+        posItems: [
+          { id: "g_p1", text: "Houdt van ordening en nette planning", tag: "Ordening" },
+          { id: "g_p2", text: "Brengt van nature structuur aan", tag: "Structuur" },
+          { id: "g_p3", text: "Gestructureerde en haalbare planning", tag: "Planning" },
+          { id: "g_p4", text: "Betrouwbaar en stabiel onder druk", tag: "Betrouwbaar" },
+          { id: "g_p5", text: "Kan zich gemakkelijk ontspannen", tag: "Tot rust komen" },
+          { id: "g_p6", text: "Ervaart innerlijke rust en kalmte", tag: "Ontspannen" }
+        ],
+        negItems: [
+          { id: "g_n1", text: "Innerlijke onrust of gejaagd gevoel", tag: "Onrust" },
+          { id: "g_n2", text: "Snel overzicht kwijt / chaos in hoofd", tag: "Chaos" },
+          { id: "g_n3", text: "Snel in paniek of stressreactie", tag: "'Paniek'" },
+          { id: "g_n4", text: "Spiertrekkingen, tics of gespannen spieren", tag: "Spiertrekkingen" },
+          { id: "g_n5", text: "Regelmatig misselijk of maagklachten", tag: "Misselijk" },
+          { id: "g_n6", text: "Veel piekeren of mollen vangen", tag: "Piekeren" },
+          { id: "g_n7", text: "Fysieke pijnen zonder duidelijke oorzaak", tag: "Pijn" }
+        ]
+      },
+      serotonine: {
+        title: "Serotonine (Stemming, Slaap & Flexibiliteit)",
+        color: "#10b981", // Groen
+        posItems: [
+          { id: "s_p1", text: "Opgewekt en positief ingesteld", tag: "Opgewekt" },
+          { id: "s_p2", text: "Houding van 'het komt wel goed'", tag: "\"Komt wel goed\"" },
+          { id: "s_p3", text: "Gemakkelijk en fris opstarten 's ochtends", tag: "Opstarten" },
+          { id: "s_p4", text: "Diepe, ontspannen en herstellende nachtrust", tag: "Ontspannen slapen" },
+          { id: "s_p5", text: "Hoge emotionele veerkracht", tag: "Veerkracht" },
+          { id: "s_p6", text: "Altijd in voor nieuwe ervaringen/uitjes", tag: "In voor iets nieuws" }
+        ],
+        negItems: [
+          { id: "s_n1", text: "Ziet overal beren op de weg / pessimistisch", tag: "Leeuwen en beren" },
+          { id: "s_n2", text: "Angstige gevoelens of bezorgdheid", tag: "Angst" },
+          { id: "s_n3", text: "Somberheid / depressieve gevoelens", tag: "Depressie" },
+          { id: "s_n4", text: "Moeite met inslapen", tag: "Niet in slaap" },
+          { id: "s_n5", text: "Regelmatig doorslaapproblemen", tag: "Niet doorslapen" },
+          { id: "s_n6", text: "Darmproblemen of PDS-achtige klachten", tag: "Darmproblemen" },
+          { id: "s_n7", text: "Frequente hoofdpijn of druk op voorhoofd", tag: "Hoofdpijn" }
+        ]
+      }
+    };
+
+    // Chart Instanties
+    let funcChart, presChart, herstelChart, barChart;
+
+    // Render Vragenlijst bij laden
+    document.addEventListener("DOMContentLoaded", () => {
+      document.getElementById('testDate').valueAsDate = new Date();
+      renderQuestions();
+    });
+
+    function renderQuestions() {
+      const container = document.getElementById('questionsAccordion');
+      let html = '';
+
+      for (const [key, category] of Object.entries(bravermanData)) {
+        html += `
+          <div class="border border-slate-200 rounded-xl overflow-hidden shadow-sm">
+            <div class="bg-slate-100 p-4 border-b border-slate-200 font-bold text-slate-700 flex justify-between items-center" style="border-left: 6px solid ${category.color}">
+              <span>${category.title}</span>
+            </div>
+            <div class="p-4 grid grid-cols-1 md:grid-cols-2 gap-6 bg-white">
+              
+              <!-- Positief / Aard -->
+              <div>
+                <h4 class="text-xs font-bold uppercase tracking-wider text-emerald-600 mb-3 flex items-center gap-1">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                  Deel A: Positieve eigenschappen (Aard)
+                </h4>
+                <div class="space-y-2">
+                  ${category.posItems.map(item => `
+                    <label class="flex items-start gap-2 text-sm text-slate-700 cursor-pointer hover:bg-slate-50 p-1.5 rounded">
+                      <input type="checkbox" id="${item.id}" class="mt-0.5 rounded text-indigo-600 focus:ring-indigo-500">
+                      <span>${item.text}</span>
+                    </label>
+                  `).join('')}
+                </div>
+              </div>
+
+              <!-- Negatief / Klachten -->
+              <div>
+                <h4 class="text-xs font-bold uppercase tracking-wider text-red-600 mb-3 flex items-center gap-1">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+                  Deel B: Klachten / Symptomen (Tekort)
+                </h4>
+                <div class="space-y-2">
+                  ${category.negItems.map(item => `
+                    <label class="flex items-start gap-2 text-sm text-slate-700 cursor-pointer hover:bg-slate-50 p-1.5 rounded">
+                      <input type="checkbox" id="${item.id}" class="mt-0.5 rounded text-red-600 focus:ring-red-500">
+                      <span>${item.text}</span>
+                    </label>
+                  `).join('')}
+                </div>
+              </div>
+
+            </div>
+          </div>
+        `;
+      }
+      container.innerHTML = html;
+    }
+
+    function calculateResults() {
+      // Verzamel scores
+      const results = {
+        dopamine: { pos: 0, neg: 0, posTags: [], negTags: [] },
+        acetylcholine: { pos: 0, neg: 0, posTags: [], negTags: [] },
+        gaba: { pos: 0, neg: 0, posTags: [], negTags: [] },
+        serotonine: { pos: 0, neg: 0, posTags: [], negTags: [] }
+      };
+
+      for (const [key, category] of Object.entries(bravermanData)) {
+        category.posItems.forEach(item => {
+          if (document.getElementById(item.id).checked) {
+            results[key].pos += 6; // Schalen naar vergelijkbare Braverman-aantallen
+            results[key].posTags.push(item.tag);
+          }
+        });
+
+        category.negItems.forEach(item => {
+          if (document.getElementById(item.id).checked) {
+            results[key].neg += 3; // Schalen van klachten
+            results[key].negTags.push(item.tag);
+          }
+        });
+      }
+
+      // Prestatie- en Herstelberekening (Cellcare style imitatie)
+      const totalPos = results.dopamine.pos + results.acetylcholine.pos + results.gaba.pos + results.serotonine.pos;
+      const totalNeg = results.dopamine.neg + results.acetylcholine.neg + results.gaba.neg + results.serotonine.neg;
+
+      // Schalen naar 0-100 voor prestatie en -50 tot 0 voor herstel
+      const prestatieScore = Math.min(120, Math.round(totalPos * 1.3)); 
+      const herstelScore = Math.max(-50, -Math.round(totalNeg * 1.8));
+
+      // Update UI
+      document.getElementById('reportClientInfo').innerText = 
+        `Cliënt: ${document.getElementById('clientName').value || 'Onbekend'} | Datum: ${document.getElementById('testDate').value}`;
+
+      document.getElementById('prestatieScoreDisplay').innerText = prestatieScore;
+      document.getElementById('herstelScoreDisplay').innerText = herstelScore;
+
+      // Vul tabellen
+      populateTags('dopaminePosList', results.dopamine.posTags);
+      populateTags('dopamineNegList', results.dopamine.negTags);
+      populateTags('acetylPosList', results.acetylcholine.posTags);
+      populateTags('acetylNegList', results.acetylcholine.negTags);
+      populateTags('gabaPosList', results.gaba.posTags);
+      populateTags('gabaNegList', results.gaba.negTags);
+      populateTags('seroPosList', results.serotonine.posTags);
+      populateTags('seroNegList', results.serotonine.negTags);
+
+      // Toon rapport & knoppen
+      document.getElementById('reportSection').classList.remove('hidden');
+      document.getElementById('btnPrintTop').classList.remove('hidden');
+
+      // Teken grafieken
+      renderCharts(results, prestatieScore, herstelScore);
+
+      // Scroll naar rapport
+      document.getElementById('reportSection').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    function populateTags(elementId, tags) {
+      const el = document.getElementById(elementId);
+      if (tags.length === 0) {
+        el.innerHTML = '<li class="text-slate-400 italic">Geen opgespoord</li>';
+      } else {
+        el.innerHTML = tags.map(t => `<li>${t}</li>`).join('');
+      }
+    }
+
+    function renderCharts(results, prestatie, herstel) {
+      // 1. Functionaliteit Donut Chart
+      if (funcChart) funcChart.destroy();
+      const ctxFunc = document.getElementById('functionalityChart').getContext('2d');
+      funcChart = new Chart(ctxFunc, {
+        type: 'doughnut',
+        data: {
+          labels: ['Dopamine', 'Acetylcholine', 'Serotonine', 'GABA'],
+          datasets: [{
+            data: [
+              results.dopamine.pos || 1, 
+              results.acetylcholine.pos || 1, 
+              results.serotonine.pos || 1, 
+              results.gaba.pos || 1
+            ],
+            backgroundColor: ['#e11d48', '#eab308', '#10b981', '#9333ea']
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: { legend: { display: false } }
+        }
+      });
+
+      // 2. Prestatievermogen Gauge (Snelheidsmeter)
+      if (presChart) presChart.destroy();
+      const ctxPres = document.getElementById('prestatieChart').getContext('2d');
+      presChart = new Chart(ctxPres, {
+        type: 'doughnut',
+        data: {
+          datasets: [{
+            data: [prestatie, Math.max(0, 120 - prestatie)],
+            backgroundColor: ['#2563eb', '#e2e8f0'],
+            borderWidth: 0
+          }]
+        },
+        options: {
+          rotation: -90,
+          circumference: 180,
+          cutout: '75%',
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: { legend: { display: false }, tooltip: { enabled: false } }
+        }
+      });
+
+      // 3. Herstelvermogen Gauge (Brandstofmeter)
+      if (herstelChart) herstelChart.destroy();
+      const ctxHerstel = document.getElementById('herstelChart').getContext('2d');
+      // Converteer negatieve herstelscore naar positieve vullingsgraad (0 = leeg/alarm, -50 = ergst)
+      const fillPercentage = Math.max(10, 100 + (herstel * 2)); 
+      herstelChart = new Chart(ctxHerstel, {
+        type: 'bar',
+        data: {
+          labels: ['Herstel'],
+          datasets: [{
+            data: [fillPercentage],
+            backgroundColor: fillPercentage < 40 ? '#ef4444' : fillPercentage < 70 ? '#f59e0b' : '#10b981',
+            borderRadius: 4
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          scales: {
+            y: { min: 0, max: 100, display: false },
+            x: { display: false }
+          },
+          plugins: { legend: { display: false } }
+        }
+      });
+
+      // 4. Staafdiagram Neurotransmitters (Positief en Negatief)
+      if (barChart) barChart.destroy();
+      const ctxBar = document.getElementById('neuroBarChart').getContext('2d');
+      barChart = new Chart(ctxBar, {
+        type: 'bar',
+        data: {
+          labels: ['Dopamine', 'Acetylcholine', 'GABA', 'Serotonine'],
+          datasets: [
+            {
+              label: 'Positief (Aard)',
+              data: [results.dopamine.pos, results.acetylcholine.pos, results.gaba.pos, results.serotonine.pos],
+              backgroundColor: ['#f43f5e', '#facc15', '#a855f7', '#34d399']
+            },
+            {
+              label: 'Klachten (Tekort)',
+              data: [-results.dopamine.neg, -results.acetylcholine.neg, -results.gaba.neg, -results.serotonine.neg],
+              backgroundColor: ['#9f1239', '#854d0e', '#581c87', '#065f46']
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          scales: {
+            y: {
+              grid: { color: '#f1f5f9' },
+              ticks: { callback: value => Math.abs(value) }
+            },
+            x: { grid: { display: false } }
+          },
+          plugins: {
+            tooltip: {
+              callbacks: {
+                label: ctx => `${ctx.dataset.label}: ${Math.abs(ctx.raw)}`
+              }
+            }
+          }
+        }
+      });
+    }
+
+    function scrollToTop() {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  </script>
+</body>
+</html>

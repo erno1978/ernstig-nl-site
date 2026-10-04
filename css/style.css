@@ -1,0 +1,90 @@
+@font-face {
+  font-family: 'Erno2024Font';
+  src: url('Erno2024.woff2') format('woff2'),
+       url('Erno2024.woff') format('woff');
+  font-weight: normal;
+  font-style: normal;
+}
+
+img#ernstig {
+  max-width: 100%;
+  height: auto;
+  display: block; /* Dit zorgt ervoor dat de afbeelding zijn eigen lijn krijgt en gecentreerd kan worden */
+  margin: 0 auto; /* Centreert de afbeelding binnen zijn container */
+}
+
+#text-container {
+  max-width: 564px; /* De maximale breedte van de tekstcontainer */
+  margin: 0 auto; /* Centreert de tekstcontainer */
+}
+
+@media (max-width: 564px) {
+  #text-container {
+    width: 90%; /* Geeft wat ruimte aan de zijkanten op kleinere schermen */
+  }
+}
+
+html,body,div,span,h1,h2,h3,h4,h5,h6,p,address,img,tr,th,td,header{
+  margin:0;
+  padding:0;
+  border:0;
+  outline:0;
+  font-size:118%;
+  vertical-align:baseline;
+  background:transparent
+}
+
+html,body{
+  line-height:1;
+  width:100%;
+  height:100%;
+  background:#c6d3cb;
+  font-size:14px;
+  font-family: 'Erno2024Font', sans-serif;
+}
+
+a:link{ 
+  text-decoration: none; 
+  color: rgb(1, 65, 1);
+}
+
+a:visited{ 
+  text-decoration: none;
+  color: rgb(1, 65, 1);
+}
+
+a:hover{ 
+  text-decoration: none; 
+  color: rgb(255, 255, 255);
+  background-color: rgb(1, 65, 1);
+}
+
+a:active {
+  text-decoration: none; 
+  color: rgb(158, 30, 30);
+}
+
+ul {
+  list-style-type: disc; /* Dit stelt het type opsommingsteken in */
+  padding-left: 20px; /* Geeft ruimte aan de linkerkant voor de bullets */
+}
+
+li {
+  margin-top: 8px; /* Geeft ruimte tussen de lijstitems */
+  margin-bottom: 5px; /* Geeft ruimte tussen de lijstitems */
+}
+
+a.contact-link:hover {
+  color: inherit; /* Houdt de standaardtekstkleur */
+  background-color: transparent; /* Geen achtergrondkleurverandering */
+  text-decoration: none; /* Geen onderstreping */
+}
+
+body {
+  background: linear-gradient(to left top, #958d7c, #546256, #9aac9a);
+}
+
+a.comic-link:hover {
+  background-color: transparent; /* Verwijder de groene achtergrond */
+  color: inherit;               /* Voorkom tekstkleur verandering */
+}

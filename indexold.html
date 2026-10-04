@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<link rel="canonical" href="https://www.ernstig.com/" />
+	<!-- Google tag (gtag.js) -->
+	<script async src="https://www.googletagmanager.com/gtag/js?id=G-DPSBE6WEKM"></script>
+	<script>
+		window.dataLayer = window.dataLayer || [];
+		function gtag() { dataLayer.push(arguments); }
+		gtag('js', new Date());
+		gtag('config', 'G-DPSBE6WEKM');
+	</script>
+	<meta charset="utf-8">
+	<title>ernstig.com</title>
+	<meta name="description" content="ernstig.com" />
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+
+	<link rel="stylesheet" media="screen" href="css/style.css">
+
+	<script>
+		function switchLanguage(language) {
+
+			const textEN = "<ul>" +
+				"It's quiet here, but it's nice to see you anyway!<br>";
+
+			const textNL = "<ul>" +
+				"Hier is weinig te doen, maar leuk dat je er bent!<br>";	
+
+			if (language === 'EN') {
+				document.getElementById('text').innerHTML = textEN;
+				switchImage('img/headerEN.png');
+			} else if (language === 'NL') {
+				document.getElementById('text').innerHTML = textNL;
+				switchImage('img/headerNL.png');
+			}
+		}
+
+		function switchImage(imageSrc) {
+			document.getElementById('ernstig').src = imageSrc;
+			document.getElementById('ernstig').style = "max-width:90%; max-height:20%"
+		}
+	</script>
+</head>
+
+<body>
+	<body onload="switchLanguage('NL')"></body>
+	<br>
+	<div>
+		<div>
+			<p align="center">
+				<a href="#" onclick="switchLanguage('NL')" class="language-link">Nederlands</a> |
+				<a href="#" onclick="switchLanguage('EN')" class="language-link">English</a>
+			</p>
+		</div>
+		<div>
+			<p align="center">
+				<img id="ernstig" src="img/headerNL.png" style="max-width:90%; max-height:20%">
+
+			<div id="text-container" style="text-align: center;">
+				<div id="text" style="text-align: left; display: inline-block;">
+				</div>
+
+				<div>
+					<p align="center">
+						<a href="https://ernstig.eu" class="comic-link">
+						<img src="img/comic.png" width="90%">
+						</a>
+					</p>
+				</div>
+
+				<div style="margin-top: 2%">
+					<p align="center">
+						<a href="mailto:website[at]ernst[removethis]ig[dot]com[andremovethis]" class="contact-link"><img src="img/mail.png" width="20%"></a>
+					</p>
+				</div>
+			</div>
+		</div>
+</body>
+
+</html>

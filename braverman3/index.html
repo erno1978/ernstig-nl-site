@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Neuro4Profiel</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+  --dopamine:#D96459;--acetylcholine:#C79A2E;--gaba:#A97BB0;--serotonine:#6FA24F;
+  --z-alarm:#D0553F;--z-laag:#E08A3C;--z-matig:#D9B23A;--z-goed:#9CBE4E;--z-ideaal:#5E9E57;
+  --header:#7E6597;--ink:#282830;--muted:#6c6c78;--line:#e4e1dc;--bg:#f3f1ec;--card:#fff;
+  --paper:#fff;--paper-ink:#282830;--paper-muted:#6c6c78;--paper-line:#e4e1dc;--accent:#7E6597;
+  --radius:14px;--shadow:0 1px 2px rgba(0,0,0,.05),0 6px 20px rgba(30,20,40,.06);
+}
+*{box-sizing:inherit}
+html{scroll-padding-top:env(safe-area-inset-top,0px);-webkit-text-size-adjust:100%}
+body{margin:0;font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  background:var(--bg);color:var(--ink);line-height:1.5;font-feature-settings:"tnum" 1;}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --ink:#e9e7ef;--muted:#a4a2ad;--line:#33313a;--bg:#171620;--card:#201f2a;
+  --shadow:0 1px 2px rgba(0,0,0,.3),0 6px 22px rgba(0,0,0,.35);}}
+:root[data-theme="dark"]{--ink:#e9e7ef;--muted:#a4a2ad;--line:#33313a;--bg:#171620;--card:#201f2a;
+  --shadow:0 1px 2px rgba(0,0,0,.3),0 6px 22px rgba(0,0,0,.35);}
+.wrap{max-width:1000px;margin:0 auto;padding:0 16px 64px}
+header.top{background:linear-gradient(180deg,var(--header),#6b5586);color:#fff;
+  padding:calc(env(safe-area-inset-top,0px) + 20px) 16px 20px;}
+header.top .inner{max-width:1000px;margin:0 auto}
+header.top h1{margin:0;font-size:1.35rem;font-weight:700;letter-spacing:-.01em}
+header.top p{margin:4px 0 0;font-size:.85rem;opacity:.85}
+nav.tabs{position:sticky;top:0;z-index:20;background:var(--bg);
+  padding-top:env(safe-area-inset-top,0px);border-bottom:1px solid var(--line);}
+nav.tabs .inner{max-width:1000px;margin:0 auto;display:flex;gap:2px;padding:0 12px}
+nav.tabs button{appearance:none;border:0;background:none;color:var(--muted);font:inherit;
+  font-weight:600;font-size:.9rem;padding:14px 14px 12px;cursor:pointer;border-bottom:2px solid transparent;}
+nav.tabs button[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--accent)}
+nav.tabs button:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:4px}
+.view{display:none;padding-top:22px}.view.active{display:block}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow)}
+.q-intro{padding:16px 18px;margin-bottom:18px}
+.q-intro h2{margin:0 0 4px;font-size:1.05rem}
+.q-intro p{margin:0 0 6px;color:var(--muted);font-size:.9rem}
+.catblock{margin-bottom:16px;overflow:hidden}
+.parthead{margin:0;padding:12px 16px;font-size:.95rem;font-weight:700;color:#fff;background:var(--accent)}
+.subhead{padding:9px 16px 4px;font-size:.8rem;color:var(--muted)}
+.qitem{display:flex;gap:14px;justify-content:space-between;align-items:center;
+  padding:10px 16px;border-top:1px solid var(--line)}
+.qtext{font-size:.92rem}
+.qtoggle{display:flex;gap:6px;flex:0 0 auto}
+.qtoggle button{border:1px solid var(--line);background:var(--card);color:var(--muted);font:inherit;
+  font-size:.8rem;font-weight:600;padding:6px 12px;border-radius:8px;cursor:pointer;min-width:64px}
+.qtoggle button.on{background:var(--accent);border-color:var(--accent);color:#fff}
+.qtoggle button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.q-actions{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:8px 0 4px;position:sticky;
+  bottom:0;background:var(--bg);padding:12px 0}
+.btn{appearance:none;border:1px solid var(--line);background:var(--card);color:var(--ink);font:inherit;
+  font-weight:600;font-size:.9rem;padding:10px 16px;border-radius:10px;cursor:pointer}
+.btn:hover{border-color:var(--accent)}
+.btn:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+.btn.ghost{background:none}
+.hint{color:var(--muted);font-size:.82rem}
+.paper{background:var(--paper);color:var(--paper-ink);border-radius:var(--radius);
+  border:1px solid var(--paper-line);box-shadow:var(--shadow);overflow:hidden;}
+.paper .band{background:var(--header);color:#fff;padding:14px 22px;font-weight:700;font-size:1.1rem}
+.paper .pad{padding:22px}
+.report-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-bottom:8px}
+@media (max-width:720px){.report-grid{grid-template-columns:1fr}}
+.panel h4{margin:0 0 8px;font-size:.95rem;font-weight:700;text-align:center;color:var(--paper-ink)}
+.panel .sub{display:block;font-weight:500;color:var(--paper-muted);font-size:.8rem}
+.panel svg{display:block;width:100%;height:auto}
+.section-title{font-weight:700;font-size:1rem;margin:22px 0 6px}
+.model-note{margin-top:18px;font-size:.8rem;color:var(--paper-muted);border-top:1px solid var(--paper-line);padding-top:12px}
+.traits{width:100%;border-collapse:collapse;font-size:.82rem;margin-top:6px}
+.traits th{padding:8px 10px;text-align:left;color:#fff;font-weight:700;vertical-align:top}
+.traits td{padding:6px 10px;border:1px solid var(--paper-line);vertical-align:top}
+.traits .rowlabel td{font-style:italic;text-align:center;color:var(--paper-muted);background:rgba(0,0,0,.02);font-weight:600}
+.tbl-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch}
+.editor .card{padding:16px 18px}
+.editor textarea{width:100%;min-height:260px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;
+  font-size:.78rem;line-height:1.45;border:1px solid var(--line);border-radius:10px;padding:12px;
+  background:var(--card);color:var(--ink);resize:vertical;}
+.editor .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:12px 0}
+.msg{font-size:.85rem;padding:8px 12px;border-radius:8px;margin-top:8px;display:none}
+.msg.ok{display:block;background:rgba(94,158,87,.12);color:var(--z-ideaal);border:1px solid rgba(94,158,87,.3)}
+.msg.err{display:block;background:rgba(208,85,63,.1);color:var(--z-alarm);border:1px solid rgba(208,85,63,.3)}
+details.help{margin-top:14px;font-size:.85rem;color:var(--muted)}
+details.help summary{cursor:pointer;font-weight:600;color:var(--ink)}
+details.help code{background:var(--bg);padding:1px 5px;border-radius:4px;font-size:.8rem}
+.empty{padding:40px 20px;text-align:center;color:var(--muted)}
+</style>
+</head>
+<body>
+<header class="top"><div class="inner">
+  <h1>Neuro4Profiel</h1>
+  <p>Gebaseerd op de Braverman-vragenlijst. Deel A &rarr; kracht, Deel B &rarr; klacht.</p>
+</div></header>
+<nav class="tabs"><div class="inner" role="tablist">
+  <button role="tab" aria-selected="true" data-view="q">Vragenlijst</button>
+  <button role="tab" aria-selected="false" data-view="r">Rapport</button>
+  <button role="tab" aria-selected="false" data-view="e">Items &amp; traits</button>
+</div></nav>
+<div class="wrap">
+  <section class="view active" id="view-q">
+    <div class="card q-intro">
+      <h2>Vragenlijst</h2>
+      <p>Beantwoord elke stelling met <strong>Waar</strong> of <strong>Onwaar</strong>. Deel A: hoe u zich de afgelopen maanden voelde. Deel B: hoe u zich nu voelt. Er zijn geen goede of foute antwoorden; geef uw eerste gevoel weer.</p>
+      <p class="hint">Antwoorden worden lokaal in deze browser bewaard.</p>
+    </div>
+    <div id="questionnaire"></div>
+    <div class="q-actions">
+      <button class="btn primary" id="calc">Bereken rapport</button>
+      <button class="btn ghost" id="clear">Wissen</button>
+      <span class="hint" id="qcount"></span>
+    </div>
+  </section>
+  <section class="view" id="view-r">
+    <div class="paper"><div class="band">Resultaat</div><div class="pad" id="report"></div></div>
+  </section>
+  <section class="view editor" id="view-e">
+    <div class="card">
+      <h2 style="margin:0 0 4px;font-size:1.05rem">Items &amp; traits beheren</h2>
+      <p class="hint" style="margin:0 0 12px">315 items geladen uit de originele vragenlijst. De dataset staat los van de scoringslogica.</p>
+      <div class="row">
+        <button class="btn" id="loadItems">Laad huidige</button>
+        <button class="btn primary" id="applyItems">Toepassen</button>
+        <button class="btn" id="exportItems">Exporteer</button>
+        <button class="btn ghost" id="resetItems">Terug naar origineel</button>
+      </div>
+      <textarea id="itemsJson" spellcheck="false" aria-label="Items JSON"></textarea>
+      <div class="msg" id="editorMsg"></div>
+      <details class="help">
+        <summary>Formaat &amp; scoringsmodel</summary>
+        <p><strong>items</strong>: lijst van <code>{part, cat, text, scoreOn?}</code>. <code>part</code> is <code>A</code> (kracht) of <code>B</code> (klacht). <code>cat</code> is <code>dopamine|acetylcholine|gaba|serotonine</code>.</p>
+        <p>Scoring per categorie: <code>kracht = #Waar in Deel A</code>, <code>klacht = &minus;(#Waar in Deel B)</code>, <code>netto = kracht + klacht</code>. Prestatievermogen = &Sigma; netto. Herstelvermogen = &Sigma; klacht.</p>
+        <p><strong>scoreOn</strong> (optioneel): standaard telt <em>Waar</em>. Zet <code>"scoreOn": false</code> op een item dat omgekeerd scoort (dan telt <em>Onwaar</em>). Deze per-item sleutel zat niet in de client-HTML van het origineel; vul hem in zodra je hem hebt gereconstrueerd.</p>
+      </details>
+    </div>
+  </section>
+</div>
+<script>
+"use strict";
+const CATS=[{key:"dopamine",label:"Dopamine"},{key:"acetylcholine",label:"Acetylcholine"},
+  {key:"gaba",label:"Gaba"},{key:"serotonine",label:"Serotonine"}];
+const COLOR={dopamine:"#D96459",acetylcholine:"#C79A2E",gaba:"#A97BB0",serotonine:"#6FA24F"};
+// perf/recovery ranges: "auto" derives from item counts. Replace with numbers for a fixed report scale.
+const CONFIG={perf:{min:"auto",max:"auto"},recovery:{min:"auto",max:0}};
+const ZONES_PERF=[{label:"Alarm",color:"var(--z-alarm)"},{label:"Laag",color:"var(--z-laag)"},
+  {label:"Matig",color:"var(--z-matig)"},{label:"Goed",color:"var(--z-goed)"},{label:"Ideaal",color:"var(--z-ideaal)"}];
+const ZONES_REC=ZONES_PERF;
+
+const DEFAULT_ITEMS = [{"part": "A", "cat": "dopamine", "text": "Ik ben iemand die diep nadenkt"}, {"part": "A", "cat": "dopamine", "text": "Ik hou van pittige discussies"}, {"part": "A", "cat": "dopamine", "text": "Ik ben een snelle denker"}, {"part": "A", "cat": "dopamine", "text": "Ik vind het makkelijk om mijn gedachten te ordenen"}, {"part": "A", "cat": "dopamine", "text": "Ik heb een levendige fantasie"}, {"part": "A", "cat": "dopamine", "text": "Ik ben geneigd mijn gedachten te analyseren en bekritiseren"}, {"part": "A", "cat": "dopamine", "text": "Ik raak snel afgeleid omdat ik zoveel tegelijkertijd doe"}, {"part": "A", "cat": "dopamine", "text": "Ik kan me goed concentreren"}, {"part": "A", "cat": "dopamine", "text": "Ik eet mijn lunch tijdens mijn werk"}, {"part": "A", "cat": "dopamine", "text": "Ik heb meestal een (iets) hogere lichaamstemperatuur"}, {"part": "A", "cat": "dopamine", "text": "Mijn aderen zijn duidelijk zichtbaar en liggen dicht aan de oppervlakte"}, {"part": "A", "cat": "dopamine", "text": "Van sporten krijg ik energie"}, {"part": "A", "cat": "dopamine", "text": "Ik eet alleen omdat het mijn lichaam energie geeft"}, {"part": "A", "cat": "dopamine", "text": "Ik heb last van slapeloosheid"}, {"part": "A", "cat": "dopamine", "text": "Ik heb een kort lontje"}, {"part": "A", "cat": "dopamine", "text": "Ik heb meestal geen koffie nodig om 's morgens op gang te komen"}, {"part": "A", "cat": "dopamine", "text": "Sporten zorgt ervoor dat ik me sterk, krachtig voel"}, {"part": "A", "cat": "dopamine", "text": "Ik heb in mijn leven periodes gekend waarin ik zeer veel energie had"}, {"part": "A", "cat": "dopamine", "text": "Ik hou van actiefilms"}, {"part": "A", "cat": "dopamine", "text": "Mijn bloeddruk is vaak (wat) verhoogd"}, {"part": "A", "cat": "dopamine", "text": "Ik heb meestal veel energie"}, {"part": "A", "cat": "dopamine", "text": "Ik laat geen gelegenheid voorbij gaan om aan seks te doen"}, {"part": "A", "cat": "dopamine", "text": "Ik lees graag geschiedenis- en andere non-fictie boeken"}, {"part": "A", "cat": "dopamine", "text": "Ik laat mij niet snel voor andermans karretje spannen"}, {"part": "A", "cat": "dopamine", "text": "Ik geef graag geld uit"}, {"part": "A", "cat": "dopamine", "text": "Ik heb fantasieën over onbeperkte macht"}, {"part": "A", "cat": "dopamine", "text": "Ik heb het niet zo snel door wanneer mensen problemen veroorzaken"}, {"part": "A", "cat": "dopamine", "text": "Men vindt soms dat ik vreemde ideeën heb, maar ik kan ze altijd rationeel verklaren"}, {"part": "A", "cat": "dopamine", "text": "Ik kan door kleine dingen zenuwachtig of van streek raken"}, {"part": "A", "cat": "dopamine", "text": "Anderen zien mij als innovatief, vernieuwend"}, {"part": "A", "cat": "dopamine", "text": "Ik ben een overheersende persoonlijkheid"}, {"part": "A", "cat": "dopamine", "text": "Ik raak snel betrokken bij ruzies en opstootjes"}, {"part": "A", "cat": "dopamine", "text": "Ik dagdroom en fantaseer vaak"}, {"part": "A", "cat": "dopamine", "text": "Ik domineer anderen binnen mijn relaties"}, {"part": "A", "cat": "dopamine", "text": "Ik ben in het algemeen gericht op de toekomst"}, {"part": "A", "cat": "dopamine", "text": "Ik ben soms speculatief, vul situaties van te voren in"}, {"part": "A", "cat": "dopamine", "text": "Ik heb bewondering voor vindingrijkheid"}, {"part": "A", "cat": "dopamine", "text": "Soms merk ik niet dat ik bepaalde gevoelens heb"}, {"part": "A", "cat": "dopamine", "text": "Ik ben erg hard voor mezelf"}, {"part": "A", "cat": "dopamine", "text": "Ik reageer vaak agressief op kritiek en kan een verdedigende houding tegenover anderen aannemen"}, {"part": "A", "cat": "dopamine", "text": "Men ziet me meestal als iemand die voornamelijk gericht is op denken"}, {"part": "A", "cat": "dopamine", "text": "Ik kan vaak moeilijk luisteren naar anderen, doordat ik met eigen ideeën bezig ben"}, {"part": "A", "cat": "dopamine", "text": "Ik ben vaak geïrriteerd of opgewonden"}, {"part": "A", "cat": "dopamine", "text": "Ik heb een hoge standaard voor mezelf en leg ook voor anderen de lat hoog"}, {"part": "A", "cat": "dopamine", "text": "Onkunde maakt me boos"}, {"part": "A", "cat": "dopamine", "text": "Men vindt me prestatiegericht"}, {"part": "A", "cat": "dopamine", "text": "Ik hecht waarde aan religie"}, {"part": "A", "cat": "dopamine", "text": "Ik doe alles om mijn doel te bereiken"}, {"part": "A", "cat": "dopamine", "text": "Sommige mensen vinden me irrationeel"}, {"part": "A", "cat": "dopamine", "text": "Sommige mensen vinden me star, rechtlijnig"}, {"part": "A", "cat": "acetylcholine", "text": "Ik kan goed verhalen onthouden"}, {"part": "A", "cat": "acetylcholine", "text": "Normaal gesproken onthoud ik gezichten goed"}, {"part": "A", "cat": "acetylcholine", "text": "Ik kan me goed concentreren en mis weinig"}, {"part": "A", "cat": "acetylcholine", "text": "Mijn intuïtie is goed"}, {"part": "A", "cat": "acetylcholine", "text": "Ik heb een goed voorstellingsvermogen"}, {"part": "A", "cat": "acetylcholine", "text": "Ik ben erg creatief"}, {"part": "A", "cat": "acetylcholine", "text": "Ik kan uitstekend luisteren"}, {"part": "A", "cat": "acetylcholine", "text": "Ik heb een ijzeren geheugen"}, {"part": "A", "cat": "acetylcholine", "text": "Ik merk alles op wat er om mij heen gebeurt"}, {"part": "A", "cat": "acetylcholine", "text": "Ik heb ooit een eetstoornis gehad"}, {"part": "A", "cat": "acetylcholine", "text": "Mijn cholesterol is laag"}, {"part": "A", "cat": "acetylcholine", "text": "Tijdens seks ben ik erg sensueel"}, {"part": "A", "cat": "acetylcholine", "text": "Ik hou van yoga en stretchen"}, {"part": "A", "cat": "acetylcholine", "text": "Ik heb meestal een trage hartslag"}, {"part": "A", "cat": "acetylcholine", "text": "Als ik eet, geniet ik van de smaak en entourage"}, {"part": "A", "cat": "acetylcholine", "text": "Ik heb een goede spierspanning"}, {"part": "A", "cat": "acetylcholine", "text": "Ik heb veel alternatieve therapieën geprobeerd"}, {"part": "A", "cat": "acetylcholine", "text": "Ik heb een goed figuur"}, {"part": "A", "cat": "acetylcholine", "text": "Ik ben een onverbeterlijke romanticus"}, {"part": "A", "cat": "acetylcholine", "text": "Ik kan makkelijk veranderen, ik zit niet vast in patronen"}, {"part": "A", "cat": "acetylcholine", "text": "Ik neig ernaar beslissingen te nemen op basis van mijn intuïtie/gevoel"}, {"part": "A", "cat": "acetylcholine", "text": "In mijn relaties ben ik erg romantisch"}, {"part": "A", "cat": "acetylcholine", "text": "Ik heb diep contact met mijn emoties"}, {"part": "A", "cat": "acetylcholine", "text": "Ik ben creatief in problemen oplossen"}, {"part": "A", "cat": "acetylcholine", "text": "Ik vind geld uitgeven om relaties goed te houden geen probleem"}, {"part": "A", "cat": "acetylcholine", "text": "Ik ben in contact met mijn gevoel"}, {"part": "A", "cat": "acetylcholine", "text": "Mystiek kan mij in vervoering brengen. Ik raak soms opgewonden door het mystieke"}, {"part": "A", "cat": "acetylcholine", "text": "Ik ben zonnig, vrolijk"}, {"part": "A", "cat": "acetylcholine", "text": "Ik heb een rijk fantasieleven"}, {"part": "A", "cat": "acetylcholine", "text": "Ik hou van speculeren"}, {"part": "A", "cat": "acetylcholine", "text": "Ik neem risico's in mijn liefdesleven"}, {"part": "A", "cat": "acetylcholine", "text": "Ik hou van fictie boeken"}, {"part": "A", "cat": "acetylcholine", "text": "Ik neig ernaar te fantaseren tijdens seks"}, {"part": "A", "cat": "acetylcholine", "text": "Ik geloof in een zielemaatje, in een zielsverbinding tussen mensen"}, {"part": "A", "cat": "acetylcholine", "text": "Mijn relaties neigen gevuld te zijn met romantiek"}, {"part": "A", "cat": "acetylcholine", "text": "Ik hou van flirten"}, {"part": "A", "cat": "acetylcholine", "text": "Sommige mensen vinden dat ik met mijn hoofd in de wolken loop"}, {"part": "A", "cat": "acetylcholine", "text": "Het ene moment kan ik van iemand houden om dezelfde persoon het volgende moment te haten"}, {"part": "A", "cat": "acetylcholine", "text": "Ik ben overgevoelig wat mijn uiterlijk betreft"}, {"part": "A", "cat": "acetylcholine", "text": "Ik ben erg expressief, bespreek graag wat me dwars zit"}, {"part": "A", "cat": "acetylcholine", "text": "Ik geloof in mystieke ervaringen"}, {"part": "A", "cat": "acetylcholine", "text": "Ik ben blij met iemand die me rechtvaardig behandelt"}, {"part": "A", "cat": "acetylcholine", "text": "Ik ben een idealist, maar geen perfectionist"}, {"part": "A", "cat": "acetylcholine", "text": "Ik geloof dat alles mogelijk is, speciaal als men is toegewijd"}, {"part": "A", "cat": "acetylcholine", "text": "Anderen zien me als iemand met visie"}, {"part": "A", "cat": "acetylcholine", "text": "Ik ben goed in harmonie tussen mensen creëren"}, {"part": "A", "cat": "acetylcholine", "text": "Mijn gedachten over religie veranderen vaak"}, {"part": "A", "cat": "acetylcholine", "text": "Liefdadigheid en onzelfzuchtigheid komen uit het hart, en ik heb er veel van"}, {"part": "A", "cat": "acetylcholine", "text": "Ik voorzie een betere toekomst"}, {"part": "A", "cat": "acetylcholine", "text": "Ik help graag anderen"}, {"part": "A", "cat": "gaba", "text": "Mijn aandacht is stabiel en ik kan andermans logica volgen"}, {"part": "A", "cat": "gaba", "text": "Ik kan de feiten die mensen vertellen onthouden"}, {"part": "A", "cat": "gaba", "text": "Ik lees liever mensen dan boeken"}, {"part": "A", "cat": "gaba", "text": "Ik onthoud het meeste van wat ik hoor"}, {"part": "A", "cat": "gaba", "text": "Ik ben goed in namen herinneren"}, {"part": "A", "cat": "gaba", "text": "Ik kan goed focussen op taken en verhalen van mensen"}, {"part": "A", "cat": "gaba", "text": "Ik leer van mijn ervaringen"}, {"part": "A", "cat": "gaba", "text": "Training is een vaste gewoonte voor mij"}, {"part": "A", "cat": "gaba", "text": "In heb een lage bloeddruk"}, {"part": "A", "cat": "gaba", "text": "Ik neem de tijd om te eten"}, {"part": "A", "cat": "gaba", "text": "Ik ben een kalm persoon"}, {"part": "A", "cat": "gaba", "text": "Ik heb een lage spierspanning"}, {"part": "A", "cat": "gaba", "text": "Ik slaap goed"}, {"part": "A", "cat": "gaba", "text": "Ik val makkelijk in slaap 's avonds"}, {"part": "A", "cat": "gaba", "text": "Cafeïne heeft weinig effect op mij"}, {"part": "A", "cat": "gaba", "text": "Ik heb weinig voedsel craving (onbedwingbare behoefte) zoals bijvoorbeeld suiker"}, {"part": "A", "cat": "gaba", "text": "Ik kan makkelijk ontspannen"}, {"part": "A", "cat": "gaba", "text": "Mijn familie vertoont geen beroertes"}, {"part": "A", "cat": "gaba", "text": "Ik kan het lang volhouden bij fysieke inspanningen"}, {"part": "A", "cat": "gaba", "text": "Wat seks betreft ben ik niet in voor experimenteren"}, {"part": "A", "cat": "gaba", "text": "Ik ben realistisch"}, {"part": "A", "cat": "gaba", "text": "Ik hou niet van filosoferen"}, {"part": "A", "cat": "gaba", "text": "Ik spaar veel geld als er een crisis dreigt"}, {"part": "A", "cat": "gaba", "text": "Ik hou van feiten en details"}, {"part": "A", "cat": "gaba", "text": "Ik heb geen kort lontje"}, {"part": "A", "cat": "gaba", "text": "Ik geloof in afronden"}, {"part": "A", "cat": "gaba", "text": "Ik neem geen risico's"}, {"part": "A", "cat": "gaba", "text": "Ik plan graag mijn dag, week, maand etc"}, {"part": "A", "cat": "gaba", "text": "Ik verzamel dingen"}, {"part": "A", "cat": "gaba", "text": "Ik creëer graag sterke, langdurige banden met anderen"}, {"part": "A", "cat": "gaba", "text": "Ik hou van komedies over families"}, {"part": "A", "cat": "gaba", "text": "Als ik een keuze maak is het definitief"}, {"part": "A", "cat": "gaba", "text": "Ik heb veel geduld"}, {"part": "A", "cat": "gaba", "text": "Ik ben niet erg avontuurlijk"}, {"part": "A", "cat": "gaba", "text": "Ik ben bang voor confrontaties en ruzies"}, {"part": "A", "cat": "gaba", "text": "Ik ben een stabiele factor in het leven van anderen"}, {"part": "A", "cat": "gaba", "text": "Ik neem beslissing gebaseerd op ervaringen uit het verleden"}, {"part": "A", "cat": "gaba", "text": "Ik hou niet van films over ander werelden of universa"}, {"part": "A", "cat": "gaba", "text": "Ik ben een beetje bedroefd"}, {"part": "A", "cat": "gaba", "text": "Ik kan goed langdurige relaties onderhouden"}, {"part": "A", "cat": "gaba", "text": "Ik geloof in vroeg naar bed en vroeg opstaan"}, {"part": "A", "cat": "gaba", "text": "Ik ben loyaal en toegewijd aan mijn geliefden"}, {"part": "A", "cat": "gaba", "text": "Ik let goed op mijn financiën"}, {"part": "A", "cat": "gaba", "text": "Ik heb een hoge ethische levensstandaard"}, {"part": "A", "cat": "gaba", "text": "Ik geloof in actief meedoen voor anderen/vrijwilligerswerk"}, {"part": "A", "cat": "gaba", "text": "Ik geloof dat de wereld vreedzamer is als mensen hun moraal verbeteren"}, {"part": "A", "cat": "gaba", "text": "Ik ben een perfectionist"}, {"part": "A", "cat": "gaba", "text": "Ik probeer anderen te plezieren, zo goed als ik kan"}, {"part": "A", "cat": "gaba", "text": "In houd me aan wetten, principes en beleid"}, {"part": "A", "cat": "gaba", "text": "Ik geloof in deadlines behalen"}, {"part": "A", "cat": "serotonine", "text": "Ik moet iets ervaren of in handen hebben om het te begrijpen"}, {"part": "A", "cat": "serotonine", "text": "Ik kan me makkelijk concentreren op handenarbeid"}, {"part": "A", "cat": "serotonine", "text": "Ik ben opmerkzaam"}, {"part": "A", "cat": "serotonine", "text": "Ik heb een goed visueel geheugen"}, {"part": "A", "cat": "serotonine", "text": "Ik denk impulsief"}, {"part": "A", "cat": "serotonine", "text": "Ik leef in het hier en nu"}, {"part": "A", "cat": "serotonine", "text": "Ik vraag naar waar het op staat"}, {"part": "A", "cat": "serotonine", "text": "Ik leer traag uit boeken, maar makkelijk uit ervaring"}, {"part": "A", "cat": "serotonine", "text": "Ik ben een actief outdoor mens"}, {"part": "A", "cat": "serotonine", "text": "Ik doe graag uitdagende/spannende dingen (skydiven, motorrijden)"}, {"part": "A", "cat": "serotonine", "text": "Ik neem geen rust om te eten"}, {"part": "A", "cat": "serotonine", "text": "Ik ben niet constant in mijn trainingen, soms elke dag of dan een maand niet"}, {"part": "A", "cat": "serotonine", "text": "Ik ben handig in en om huis"}, {"part": "A", "cat": "serotonine", "text": "Ik los problemen spontaan op"}, {"part": "A", "cat": "serotonine", "text": "Wat seks betreft experimenteer ik graag"}, {"part": "A", "cat": "serotonine", "text": "Ik heb een lage bloeddruk"}, {"part": "A", "cat": "serotonine", "text": "Ik heb zelden last van koolhydraatcraving (sterke onbedwingbare behoefte)"}, {"part": "A", "cat": "serotonine", "text": "Ik slaap te veel"}, {"part": "A", "cat": "serotonine", "text": "Ik ben actie georiënteerd"}, {"part": "A", "cat": "serotonine", "text": "Ik hou me zelden aan het plan of de agenda"}, {"part": "A", "cat": "serotonine", "text": "Ik ben gefascineerd door wapens"}, {"part": "A", "cat": "serotonine", "text": "Ik beleef het leven in het moment"}, {"part": "A", "cat": "serotonine", "text": "Ik let niet goed op mijn financiën"}, {"part": "A", "cat": "serotonine", "text": "Ik verzamel feiten, maar vaak dan wel ongestructureerd"}, {"part": "A", "cat": "serotonine", "text": "Ik ben een goede onderhandelaar"}, {"part": "A", "cat": "serotonine", "text": "Ik ben cynisch over de filosofie van anderen"}, {"part": "A", "cat": "serotonine", "text": "Ik ben artistiek"}, {"part": "A", "cat": "serotonine", "text": "Ik ben 'drama'"}, {"part": "A", "cat": "serotonine", "text": "Ik kijk graag naar horror films"}, {"part": "A", "cat": "serotonine", "text": "Ik geloof in helderziendheid"}, {"part": "A", "cat": "serotonine", "text": "Ik heb veel frivole relaties"}, {"part": "A", "cat": "serotonine", "text": "Ik heb graag plezier"}, {"part": "A", "cat": "serotonine", "text": "Vaak wil ik gewoon maar eten, drinken en vrolijk zijn"}, {"part": "A", "cat": "serotonine", "text": "Ik heb moeite om eerlijk te blijven"}, {"part": "A", "cat": "serotonine", "text": "Ik neem risico's wat sport betreft"}, {"part": "A", "cat": "serotonine", "text": "Ik hou van optreden / publiek entertainen"}, {"part": "A", "cat": "serotonine", "text": "Ik ben een goede ambachtsman/vrouw"}, {"part": "A", "cat": "serotonine", "text": "Ik kan makkelijk anderen 'gebruiken'"}, {"part": "A", "cat": "serotonine", "text": "Ik kan makkelijk een relatie beëindigen en verder gaan met mijn leven"}, {"part": "A", "cat": "serotonine", "text": "Ik ben erg flexibel"}, {"part": "A", "cat": "serotonine", "text": "Ik hou altijd mijn opties open voor iets beters"}, {"part": "A", "cat": "serotonine", "text": "Sparen is voor dwazen"}, {"part": "A", "cat": "serotonine", "text": "Ik ben optimistisch"}, {"part": "A", "cat": "serotonine", "text": "Ik bid alleen als ik spirituele steun nodig heb"}, {"part": "A", "cat": "serotonine", "text": "Ik hoef niet perfect te zijn, ik leef op mijn manier"}, {"part": "A", "cat": "serotonine", "text": "Ik heb niet bijzonder hoge morele en ethische waarden"}, {"part": "A", "cat": "serotonine", "text": "Ik doe wat ik wil en wanneer ik wil"}, {"part": "A", "cat": "serotonine", "text": "Ik werk niet graag hard voor een langere tijd"}, {"part": "A", "cat": "serotonine", "text": "Ik leef in het moment"}, {"part": "A", "cat": "serotonine", "text": "Ik geloof dat alles een functie en doel heeft"}, {"part": "B", "cat": "dopamine", "text": "Ik kom moeilijk door taken heen, zelfs als ze interessant voor mij zijn"}, {"part": "B", "cat": "dopamine", "text": "Ik ben traag in nieuwe dingen leren"}, {"part": "B", "cat": "dopamine", "text": "Ik heb koffie nodig om wakker te worden"}, {"part": "B", "cat": "dopamine", "text": "Ik heb moeite met voortdurende aandacht en concentratie"}, {"part": "B", "cat": "dopamine", "text": "Ik kan niet snel genoeg denken"}, {"part": "B", "cat": "dopamine", "text": "Ik heb geen goede aandachtscurve"}, {"part": "B", "cat": "dopamine", "text": "Ik ben moeilijk te motiveren voor seks"}, {"part": "B", "cat": "dopamine", "text": "Ik sta 's morgens moeizaam op"}, {"part": "B", "cat": "dopamine", "text": "Ik heb een verminderd libido"}, {"part": "B", "cat": "dopamine", "text": "In het verleden had ik een verslaving of alcoholprobleem"}, {"part": "B", "cat": "dopamine", "text": "Ik slaap te veel"}, {"part": "B", "cat": "dopamine", "text": "Ik heb een onbedwingbare behoefte aan suiker"}, {"part": "B", "cat": "dopamine", "text": "Zonder duidelijke reden voelde ik me de laatste tijd opgebrand"}, {"part": "B", "cat": "dopamine", "text": "Ik vecht altijd al tegen overgewicht"}, {"part": "B", "cat": "dopamine", "text": "Ik heb behoefte gehad aan cocaïne, amfetamines of XTC"}, {"part": "B", "cat": "dopamine", "text": "Ik ervaar uitputting zonder me erg te hebben ingespannen"}, {"part": "B", "cat": "dopamine", "text": "Ik heb weinig haast"}, {"part": "B", "cat": "dopamine", "text": "Ik laat me makkelijk bekritiseren"}, {"part": "B", "cat": "dopamine", "text": "Mensen maken snel misbruik van mij"}, {"part": "B", "cat": "dopamine", "text": "Ik kijk altijd naar anderen voor leiding"}, {"part": "B", "cat": "dopamine", "text": "Ik voel me down of depressief"}, {"part": "B", "cat": "dopamine", "text": "Mensen vinden mij te mild"}, {"part": "B", "cat": "dopamine", "text": "Ik vind het fijn om anderen te volgen"}, {"part": "B", "cat": "dopamine", "text": "Ik kan geen goede keuzes maken"}, {"part": "B", "cat": "dopamine", "text": "Ik kan moeilijk helder denken"}, {"part": "B", "cat": "acetylcholine", "text": "Mijn partner/vrienden vinden me niet romantisch"}, {"part": "B", "cat": "acetylcholine", "text": "Ik heb geen voorstellingsvermogen"}, {"part": "B", "cat": "acetylcholine", "text": "Ik vergeet verjaardagen van familie en vrienden"}, {"part": "B", "cat": "acetylcholine", "text": "Ik ben een deel van mijn creativiteit verloren"}, {"part": "B", "cat": "acetylcholine", "text": "Het valt me op dat mijn geheugen is verminderd"}, {"part": "B", "cat": "acetylcholine", "text": "Ik kan moeilijk namen onthouden als ik mensen voor het eerst ontmoet"}, {"part": "B", "cat": "acetylcholine", "text": "Ik heb een onbedwingbare behoefte aan vet eten"}, {"part": "B", "cat": "acetylcholine", "text": "Het voelt alsof mijn lichaam uiteenvalt / niet meer functioneert"}, {"part": "B", "cat": "acetylcholine", "text": "Ik adem moeizaam"}, {"part": "B", "cat": "acetylcholine", "text": "Ik lijd aan slapeloosheid"}, {"part": "B", "cat": "acetylcholine", "text": "Ik heb geëxperimenteerd met hallucinogene stoffen en andere geestverruimende middelen"}, {"part": "B", "cat": "acetylcholine", "text": "Ik heb een lagere spierspanning gekregen"}, {"part": "B", "cat": "acetylcholine", "text": "Ik sport/beweeg niet meer"}, {"part": "B", "cat": "acetylcholine", "text": "Ik voel weinig plezier"}, {"part": "B", "cat": "acetylcholine", "text": "Ik hou van routine"}, {"part": "B", "cat": "acetylcholine", "text": "Ik geef makkelijk toe en ben onderdanig"}, {"part": "B", "cat": "acetylcholine", "text": "Ik ben zelden over iets gepassioneerd"}, {"part": "B", "cat": "acetylcholine", "text": "Ik doe liever dingen alleen dan in een grote groep"}, {"part": "B", "cat": "acetylcholine", "text": "Ik voel wanhoop"}, {"part": "B", "cat": "acetylcholine", "text": "Ik bescherm mezelf tegen kwetsingen door weinig over mezelf te vertellen"}, {"part": "B", "cat": "acetylcholine", "text": "Anderen worden eerder kwaad om irriterende dingen dan ik"}, {"part": "B", "cat": "acetylcholine", "text": "Ik let niet op de gevoelens van een ander"}, {"part": "B", "cat": "acetylcholine", "text": "Ik geef niet om verhalen over de ander, wel om die van mezelf"}, {"part": "B", "cat": "acetylcholine", "text": "Ik ben geobsedeerd door mijn tekortkomingen"}, {"part": "B", "cat": "acetylcholine", "text": "Ik ben niet vrolijk, zonnig"}, {"part": "B", "cat": "gaba", "text": "Ik moet soms stukken tekst telkens opnieuw lezen om het te op te nemen"}, {"part": "B", "cat": "gaba", "text": "Ik kan me moeilijk concentreren, want ik ben nerveus en snel geïrriteerd"}, {"part": "B", "cat": "gaba", "text": "Mijn vermogen om te focussen fluctueert"}, {"part": "B", "cat": "gaba", "text": "Ik kan moeilijk het juiste woord vinden"}, {"part": "B", "cat": "gaba", "text": "Ik weet dat ik intelligent ben, maar het is moeilijk voor anderen dit te merken"}, {"part": "B", "cat": "gaba", "text": "Ik denk snel, maar kan niet altijd zeggen wat ik bedoel"}, {"part": "B", "cat": "gaba", "text": "Als het 'moet' is mijn herinnering slecht"}, {"part": "B", "cat": "gaba", "text": "Ik onthoud geen telefoonnummers"}, {"part": "B", "cat": "gaba", "text": "Ik heb frequente rugpijn en/of hoofdpijn"}, {"part": "B", "cat": "gaba", "text": "Ik ben vaak nerveus"}, {"part": "B", "cat": "gaba", "text": "Ik heb vaak een hoge spierspanning"}, {"part": "B", "cat": "gaba", "text": "Ik neig naar koude handen"}, {"part": "B", "cat": "gaba", "text": "Ik heb regelmatig hartkloppingen"}, {"part": "B", "cat": "gaba", "text": "Ik heb regelmatig een raar gevoel in mijn buik"}, {"part": "B", "cat": "gaba", "text": "Ik eet te veel"}, {"part": "B", "cat": "gaba", "text": "Soms voel ik me duizelig"}, {"part": "B", "cat": "gaba", "text": "Ik hou van yoga, dat helpt me ontspannen"}, {"part": "B", "cat": "gaba", "text": "Ik voel me beverig"}, {"part": "B", "cat": "gaba", "text": "Ik ben trillerig"}, {"part": "B", "cat": "gaba", "text": "Ik heb behoefte aan bitter voedsel"}, {"part": "B", "cat": "gaba", "text": "Ik zweet soms te veel"}, {"part": "B", "cat": "gaba", "text": "Ik ben snel kortademig"}, {"part": "B", "cat": "gaba", "text": "Ik ben vaak moe, zelfs na een goede nachtrust"}, {"part": "B", "cat": "gaba", "text": "Ik doe graag dingen tegelijk, maar beslissen wat ik eerst doe is moeilijk"}, {"part": "B", "cat": "gaba", "text": "Ik kan snel overenthousiast raken"}, {"part": "B", "cat": "gaba", "text": "Ik vertel vaak een leugentje om bestwil"}, {"part": "B", "cat": "gaba", "text": "Mijn stemming wisselt"}, {"part": "B", "cat": "gaba", "text": "Als dingen saai zijn probeer ik altijd iets spannends toe te voegen"}, {"part": "B", "cat": "gaba", "text": "Ik ben wispelturig in stemming en gedachten"}, {"part": "B", "cat": "gaba", "text": "Ik zeg wat ik voel en let niet op de reacties van anderen"}, {"part": "B", "cat": "gaba", "text": "Mijn impulsieve kant kan me zomaar in problemen brengen"}, {"part": "B", "cat": "gaba", "text": "Ik heb altijd al minder dan gemiddeld interesse gehad in seks"}, {"part": "B", "cat": "gaba", "text": "Ik heb soms woedeaanvallen en voel me daarna erg schuldig"}, {"part": "B", "cat": "gaba", "text": "Ik neig dingen te doen waarvan ik denk dat ze leuk zijn"}, {"part": "B", "cat": "gaba", "text": "Ik ben wat theatraal en vestig de aandacht op mezelf"}, {"part": "B", "cat": "gaba", "text": "De regels die ik vroeger volgde vind ik nu belachelijk"}, {"part": "B", "cat": "gaba", "text": "Ik ben veel vrienden kwijtgeraakt"}, {"part": "B", "cat": "gaba", "text": "Ik zie de wet als arbitrair en niet reëel"}, {"part": "B", "cat": "gaba", "text": "Ik hou me niet meer aan de regels"}, {"part": "B", "cat": "gaba", "text": "Ik ben niet goed in romantische relaties volhouden"}, {"part": "B", "cat": "serotonine", "text": "Ik kan dingen die ik in het verleden heb gezien niet herinneren"}, {"part": "B", "cat": "serotonine", "text": "Ik heb weinig richtingsgevoel"}, {"part": "B", "cat": "serotonine", "text": "Ik heb een trage reactiesnelheid"}, {"part": "B", "cat": "serotonine", "text": "Ik ben niet erg opmerkzaam"}, {"part": "B", "cat": "serotonine", "text": "Ik ben bedroefd"}, {"part": "B", "cat": "serotonine", "text": "Ik heb een grote behoefte aan zout"}, {"part": "B", "cat": "serotonine", "text": "Ik heb last van nachtzweten"}, {"part": "B", "cat": "serotonine", "text": "Ik word minstens twee maal per nacht wakker"}, {"part": "B", "cat": "serotonine", "text": "Ik ben 's morgens vroeg wakker"}, {"part": "B", "cat": "serotonine", "text": "Ik draai/woel veel in bed om me comfortabel te voelen"}, {"part": "B", "cat": "serotonine", "text": "Ik kan niet ontspannen"}, {"part": "B", "cat": "serotonine", "text": "Ik heb geen energie om te trainen"}, {"part": "B", "cat": "serotonine", "text": "Als ik wakker word val ik moeilijk weer in slaap"}, {"part": "B", "cat": "serotonine", "text": "Ik heb last van slapeloosheid"}, {"part": "B", "cat": "serotonine", "text": "Angst houdt me gevangen"}, {"part": "B", "cat": "serotonine", "text": "Ik ben snel geïrriteerd"}, {"part": "B", "cat": "serotonine", "text": "Mijn fantasie gaat met me op de loop"}, {"part": "B", "cat": "serotonine", "text": "Ik blijf hangen in ideeën"}, {"part": "B", "cat": "serotonine", "text": "Ik heb last van chronische angst"}, {"part": "B", "cat": "serotonine", "text": "Ik heb in mijn leven suïcidale gedachten gehad"}, {"part": "B", "cat": "serotonine", "text": "Ik ben soms zo gestructureerd dat ik niet meer flexibel ben"}, {"part": "B", "cat": "serotonine", "text": "Ik heb destructieve gedachten over mezelf"}, {"part": "B", "cat": "serotonine", "text": "Ik wil geen risico's meer nemen"}, {"part": "B", "cat": "serotonine", "text": "Ik kan niet stoppen met denken over de zin / reden van het leven"}, {"part": "B", "cat": "serotonine", "text": "Het gebrek aan zingeving in mijn leven is pijnlijk"}] ;
+const DEFAULT_TRAITS = {
+  dopamine:{pos:["Energie","Wilskracht","Zelfvertrouwen","Focus","Drive"],
+    neg:["Minder energie","Minder concentratie","Besluiteloos","Minder geheugen","Wisselvallig"]},
+  acetylcholine:{pos:["Creativiteit","Snel schakelen","Goed geheugen","Nieuwsgierig","Speels"],
+    neg:["Weinig sociale zin","Weinig interesse","Terugtrekken","Geen uitdaging","Vergeetachtig"]},
+  gaba:{pos:["Ordening","Structuur","Planning","Betrouwbaar","Ontspannen"],
+    neg:["Onrust","Paniek","Piekeren","Spiertrekkingen","Misselijk","Pijn"]},
+  serotonine:{pos:["Opgewekt","Vertrouwen","Ontspannen slapen","Veerkracht","Open"],
+    neg:["Angst","Somberheid","Slecht inslapen","Slecht doorslapen","Darmklachten","Hoofdpijn"]}
+};
+
+const LS_ITEMS="neuro4.items",LS_TRAITS="neuro4.traits",LS_ANS="neuro4.answers";
+function load(k,f){try{const v=localStorage.getItem(k);return v?JSON.parse(v):f;}catch(e){return f;}}
+function saveLS(k,v){try{localStorage.setItem(k,JSON.stringify(v));}catch(e){}}
+let ITEMS=load(LS_ITEMS,DEFAULT_ITEMS);
+let TRAITS=load(LS_TRAITS,DEFAULT_TRAITS);
+let answers=load(LS_ANS,{});
+const saveAns=()=>saveLS(LS_ANS,answers);
+
+function score(){
+  const per={};CATS.forEach(c=>per[c.key]={kracht:0,klacht:0,netto:0,maxPos:0,maxNeg:0});
+  ITEMS.forEach((it,i)=>{
+    const p=per[it.cat];if(!p)return;
+    const want=it.scoreOn===false?false:true;
+    if(it.part==="A"){p.maxPos++;if(answers[i]===want)p.kracht++;}
+    else{p.maxNeg++;if(answers[i]===want)p.klacht--;}
+  });
+  CATS.forEach(c=>{const p=per[c.key];p.netto=p.kracht+p.klacht;});
+  const prestatie=CATS.reduce((s,c)=>s+per[c.key].netto,0);
+  const herstel=CATS.reduce((s,c)=>s+per[c.key].klacht,0);
+  const maxPosTot=CATS.reduce((s,c)=>s+per[c.key].maxPos,0);
+  const maxNegTot=CATS.reduce((s,c)=>s+per[c.key].maxNeg,0);
+  return {per,prestatie,herstel,maxPosTot,maxNegTot};
+}
+
+const NS="http://www.w3.org/2000/svg";
+function el(t,a,c){const n=document.createElementNS(NS,t);for(const k in a)n.setAttribute(k,a[k]);(c||[]).forEach(x=>n.appendChild(x));return n;}
+function tx(x,y,s,o){o=o||{};const t=el("text",{x,y,"text-anchor":o.anchor||"middle","font-size":o.size||12,
+  "font-weight":o.weight||500,fill:o.fill||"var(--paper-ink)","font-family":"Inter,sans-serif"});t.textContent=s;return t;}
+function svg(vb,ex){return el("svg",Object.assign({viewBox:vb,xmlns:NS,role:"img"},ex||{}));}
+const rd=d=>d*Math.PI/180;
+const pol=(cx,cy,r,d)=>({x:cx+r*Math.cos(rd(d)),y:cy-r*Math.sin(rd(d))});
+function arcP(cx,cy,r,a0,a1){const p0=pol(cx,cy,r,a0),p1=pol(cx,cy,r,a1);
+  const lg=Math.abs(a1-a0)>180?1:0,sw=a1<a0?1:0;return `M ${p0.x} ${p0.y} A ${r} ${r} 0 ${lg} ${sw} ${p1.x} ${p1.y}`;}
+
+function donut(per){
+  const s=svg("0 0 240 240",{width:240,height:240});const cx=120,cy=120,rO=100,rI=58,seg=90,gap=3;
+  CATS.forEach((c,i)=>{const a0=90-i*seg+90,st=a0-gap/2,en=a0-seg+gap/2;
+    const o0=pol(cx,cy,rO,st),o1=pol(cx,cy,rO,en),i1=pol(cx,cy,rI,en),i0=pol(cx,cy,rI,st);
+    const d=`M ${o0.x} ${o0.y} A ${rO} ${rO} 0 0 1 ${o1.x} ${o1.y} L ${i1.x} ${i1.y} A ${rI} ${rI} 0 0 0 ${i0.x} ${i0.y} Z`;
+    s.appendChild(el("path",{d,fill:COLOR[c.key],opacity:.92}));
+    const mid=(st+en)/2,rr=(rO+rI)/2,pv=pol(cx,cy,rr,mid);
+    s.appendChild(tx(pv.x,pv.y+6,String(per[c.key].netto),{size:20,weight:700,fill:"#fff"}));
+    const pl=pol(cx,cy,rO+14,mid);s.appendChild(tx(pl.x,pl.y+3,c.label,{size:9,weight:700,fill:"var(--paper-muted)"}));});
+  s.appendChild(el("circle",{cx,cy,r:rI-6,fill:"var(--paper)"}));
+  s.appendChild(tx(cx,cy-2,"brein",{size:11,weight:600,fill:"var(--paper-muted)"}));
+  const tot=CATS.reduce((a,c)=>a+per[c.key].netto,0);
+  s.appendChild(tx(cx,cy+16,String(tot),{size:16,weight:700}));return s;}
+
+function speedo(v,mn,mx){
+  const s=svg("0 0 240 160",{width:240,height:160});const cx=120,cy=138,R=96,rw=20,n=ZONES_PERF.length;
+  for(let i=0;i<n;i++){const a0=180-180*i/n,a1=180-180*(i+1)/n;
+    s.appendChild(el("path",{d:arcP(cx,cy,R,a0,a1),fill:"none",stroke:ZONES_PERF[i].color,"stroke-width":rw}));
+    const am=(a0+a1)/2,pl=pol(cx,cy,R+2,am);s.appendChild(tx(pl.x,pl.y-2,ZONES_PERF[i].label,{size:7.5,weight:700,fill:"var(--paper-muted)"}));}
+  const rg=mx-mn||1;
+  for(let i=0;i<=5;i++){const val=mn+rg*i/5,f=(val-mn)/rg,a=180*(1-f);
+    const p1=pol(cx,cy,R-rw/2-2,a),p2=pol(cx,cy,R-rw/2-9,a);
+    s.appendChild(el("line",{x1:p1.x,y1:p1.y,x2:p2.x,y2:p2.y,stroke:"var(--paper-line)","stroke-width":1.5}));
+    const pt=pol(cx,cy,R-rw-14,a);s.appendChild(tx(pt.x,pt.y+3,String(Math.round(val)),{size:8,weight:600,fill:"var(--paper-muted)"}));}
+  const cl=Math.max(mn,Math.min(mx,v)),f=(cl-mn)/rg,a=180*(1-f),tip=pol(cx,cy,R-rw-4,a);
+  s.appendChild(el("line",{x1:cx,y1:cy,x2:tip.x,y2:tip.y,stroke:"var(--dopamine)","stroke-width":3,"stroke-linecap":"round"}));
+  s.appendChild(el("circle",{cx,cy,r:7,fill:"var(--dopamine)"}));
+  s.appendChild(tx(cx,cy+30,String(v),{size:22,weight:700}));return s;}
+
+function fuel(v,mn,mx){
+  const s=svg("0 0 240 200",{width:240,height:200});const x=96,y=18,w=78,h=150,n=ZONES_REC.length,sx=52,sw=16;
+  for(let i=0;i<n;i++){const zy=y+h-h*(i+1)/n,zh=h/n;
+    s.appendChild(el("rect",{x:sx,y:zy,width:sw,height:zh,fill:ZONES_REC[i].color,opacity:.85}));
+    s.appendChild(tx(sx-4,zy+zh/2+3,ZONES_REC[i].label,{size:7.5,weight:700,anchor:"end",fill:"var(--paper-muted)"}));}
+  const rg=(mx-mn)||1;
+  for(let i=0;i<=4;i++){const val=mn+rg*i/4,yy=y+h-h*((val-mn)/rg);
+    s.appendChild(tx(x-6,yy+3,String(Math.round(val)),{size:8,weight:600,anchor:"end",fill:"var(--paper-muted)"}));
+    s.appendChild(el("line",{x1:x,y1:yy,x2:x+w,y2:yy,stroke:"var(--paper-line)","stroke-width":.75,opacity:.6}));}
+  s.appendChild(el("rect",{x,y,width:w,height:h,rx:8,fill:"none",stroke:"var(--paper-line)","stroke-width":2}));
+  const cl=Math.max(mn,Math.min(mx,v)),f=(cl-mn)/rg,fh=h*f,fy=y+h-fh,zi=Math.min(n-1,Math.max(0,Math.floor(f*n)));
+  s.appendChild(el("rect",{x:x+2,y:fy,width:w-4,height:Math.max(0,fh-2),rx:6,fill:ZONES_REC[zi].color,opacity:.9}));
+  s.appendChild(el("line",{x1:x-2,y1:fy,x2:x+w+2,y2:fy,stroke:"var(--paper-ink)","stroke-width":2}));
+  s.appendChild(tx(x+w/2,y+h+22,String(v),{size:22,weight:700}));return s;}
+
+function bars(per){
+  const W=680,H=300,padL=30,padB=34,padT=20;
+  const s=svg(`0 0 ${W} ${H}`,{width:"100%",height:"auto",preserveAspectRatio:"xMidYMid meet"});
+  const maxPos=Math.max(10,...CATS.map(c=>per[c.key].kracht)),maxNeg=Math.max(5,...CATS.map(c=>-per[c.key].klacht));
+  const top=Math.ceil(maxPos/5)*5,bot=Math.ceil(maxNeg/5)*5,plotH=H-padB-padT,zeroY=padT+plotH*top/(top+bot);
+  const yS=v=>plotH*v/(top+bot);
+  for(let v=-bot;v<=top;v+=5){const yy=zeroY-yS(v);
+    s.appendChild(el("line",{x1:padL,y1:yy,x2:W-10,y2:yy,stroke:"var(--paper-line)","stroke-width":v===0?1.4:.6,opacity:v===0?1:.5}));
+    s.appendChild(tx(padL-6,yy+3,String(v),{size:9,anchor:"end",fill:"var(--paper-muted)"}));}
+  const slot=(W-padL-20)/CATS.length,bw=44;
+  CATS.forEach((c,i)=>{const p=per[c.key],cx=padL+16+slot*i+slot/2,col=COLOR[c.key];
+    if(p.kracht>0){s.appendChild(el("rect",{x:cx-bw/2,y:zeroY-yS(p.kracht),width:bw,height:yS(p.kracht),fill:col,opacity:.28,rx:2}));
+      s.appendChild(tx(cx-2,zeroY-yS(p.kracht)-5,String(p.kracht),{size:10,weight:600,fill:"var(--paper-muted)",anchor:"end"}));}
+    const nv=Math.max(0,p.netto);
+    if(nv>0){s.appendChild(el("rect",{x:cx-bw/2+7,y:zeroY-yS(nv),width:bw-14,height:yS(nv),fill:col,opacity:.92,rx:2}));
+      s.appendChild(tx(cx+bw/2-2,zeroY-yS(nv)-5,String(p.netto),{size:12,weight:700,fill:"var(--paper-ink)"}));}
+    else{s.appendChild(tx(cx,zeroY-8,String(p.netto),{size:12,weight:700,fill:"var(--paper-ink)"}));}
+    const kv=-p.klacht;
+    if(kv>0){s.appendChild(el("rect",{x:cx-bw/2,y:zeroY,width:bw,height:yS(kv),fill:col,opacity:.5,rx:2}));
+      s.appendChild(tx(cx,zeroY+yS(kv)+13,String(p.klacht),{size:10,weight:600,fill:"var(--paper-muted)"}));}
+    s.appendChild(tx(cx,H-8,c.label,{size:10,weight:700,fill:col}));});
+  return s;}
+
+function traitTable(){
+  const wrap=document.createElement("div");wrap.className="tbl-scroll";
+  const t=document.createElement("table");t.className="traits";
+  const hr=document.createElement("tr");
+  CATS.forEach(c=>{const th=document.createElement("th");th.textContent=c.label;th.style.background=COLOR[c.key];hr.appendChild(th);});
+  t.appendChild(hr);
+  const l1=document.createElement("tr");l1.className="rowlabel";
+  CATS.forEach(()=>{const td=document.createElement("td");td.textContent="positief";l1.appendChild(td);});t.appendChild(l1);
+  const pm=Math.max(...CATS.map(c=>TRAITS[c.key]&&TRAITS[c.key].pos?TRAITS[c.key].pos.length:0));
+  for(let r=0;r<pm;r++){const tr=document.createElement("tr");
+    CATS.forEach(c=>{const td=document.createElement("td");td.textContent=(TRAITS[c.key]&&TRAITS[c.key].pos?TRAITS[c.key].pos[r]:"")||"";tr.appendChild(td);});t.appendChild(tr);}
+  const l2=document.createElement("tr");l2.className="rowlabel";
+  CATS.forEach(()=>{const td=document.createElement("td");td.textContent="negatief";l2.appendChild(td);});t.appendChild(l2);
+  const nm=Math.max(...CATS.map(c=>TRAITS[c.key]&&TRAITS[c.key].neg?TRAITS[c.key].neg.length:0));
+  for(let r=0;r<nm;r++){const tr=document.createElement("tr");
+    CATS.forEach(c=>{const td=document.createElement("td");td.textContent=(TRAITS[c.key]&&TRAITS[c.key].neg?TRAITS[c.key].neg[r]:"")||"";tr.appendChild(td);});t.appendChild(tr);}
+  wrap.appendChild(t);return wrap;}
+
+function renderReport(){
+  const box=document.getElementById("report");box.textContent="";
+  const answered=Object.values(answers).some(v=>v===true);
+  if(!answered){const e=document.createElement("div");e.className="empty";
+    e.textContent="Nog geen antwoorden. Vul de vragenlijst in en klik op 'Bereken rapport'.";box.appendChild(e);return;}
+  const S=score();
+  const pMin=CONFIG.perf.min==="auto"?-S.maxNegTot:CONFIG.perf.min;
+  const pMax=CONFIG.perf.max==="auto"?S.maxPosTot:CONFIG.perf.max;
+  const rMin=CONFIG.recovery.min==="auto"?-S.maxNegTot:CONFIG.recovery.min;
+  const rMax=CONFIG.recovery.max==="auto"?0:CONFIG.recovery.max;
+  const grid=document.createElement("div");grid.className="report-grid";
+  const mk=(title,sub,node)=>{const d=document.createElement("div");d.className="panel";
+    const h=document.createElement("h4");h.innerHTML=title+(sub?` <span class="sub">${sub}</span>`:"");
+    d.appendChild(h);d.appendChild(node);return d;};
+  grid.appendChild(mk("Functionaliteit","",donut(S.per)));
+  grid.appendChild(mk("Prestatievermogen",`(${S.prestatie})`,speedo(S.prestatie,pMin,pMax)));
+  grid.appendChild(mk("Herstelvermogen",`(${S.herstel})`,fuel(S.herstel,rMin,rMax)));
+  box.appendChild(grid);
+  const st=document.createElement("div");st.className="section-title";st.textContent="Neurotransmitters";box.appendChild(st);
+  box.appendChild(bars(S.per));
+  box.appendChild(traitTable());
+  const note=document.createElement("div");note.className="model-note";
+  note.innerHTML="Model: kracht = aantal Waar in Deel A, klacht = &minus; aantal Waar in Deel B (per neurotransmitter). Prestatievermogen = som van netto, Herstelvermogen = som van klacht. Meterschaal auto-afgeleid uit het aantal items.";
+  box.appendChild(note);}
+
+function renderQuestionnaire(){
+  const box=document.getElementById("questionnaire");box.textContent="";
+  [["A","Deel A","Zoals u zich de afgelopen maanden voelde."],
+   ["B","Deel B","Zoals u zich nu voelt."]].forEach(([part,title,sub])=>{
+    const block=document.createElement("div");block.className="card catblock";
+    const h=document.createElement("div");h.className="parthead";h.textContent=title;block.appendChild(h);
+    const s=document.createElement("div");s.className="subhead";s.textContent=sub;block.appendChild(s);
+    ITEMS.forEach((it,i)=>{
+      if(it.part!==part)return;
+      const row=document.createElement("div");row.className="qitem";
+      const t=document.createElement("div");t.className="qtext";t.textContent=it.text;
+      const tog=document.createElement("div");tog.className="qtoggle";
+      const bT=document.createElement("button");bT.type="button";bT.textContent="Waar";
+      const bF=document.createElement("button");bF.type="button";bF.textContent="Onwaar";
+      const sync=()=>{bT.className=answers[i]===true?"on":"";bF.className=answers[i]===false?"on":"";};
+      bT.addEventListener("click",()=>{answers[i]=answers[i]===true?undefined:true;saveAns();sync();updateCount();});
+      bF.addEventListener("click",()=>{answers[i]=answers[i]===false?undefined:false;saveAns();sync();updateCount();});
+      sync();tog.appendChild(bT);tog.appendChild(bF);
+      row.appendChild(t);row.appendChild(tog);block.appendChild(row);});
+    box.appendChild(block);});
+  updateCount();}
+function updateCount(){
+  const a=Object.values(answers).filter(v=>v!==undefined).length;
+  document.getElementById("qcount").textContent=`${a} van ${ITEMS.length} beantwoord`;}
+
+document.querySelectorAll('nav.tabs button').forEach(b=>{b.addEventListener("click",()=>{
+  document.querySelectorAll('nav.tabs button').forEach(x=>x.setAttribute("aria-selected",x===b));
+  const v=b.dataset.view;document.querySelectorAll(".view").forEach(x=>x.classList.remove("active"));
+  document.getElementById("view-"+v).classList.add("active");
+  if(v==="r")renderReport();
+  if(v==="e")document.getElementById("itemsJson").value=JSON.stringify({items:ITEMS,traits:TRAITS},null,1);
+  window.scrollTo({top:0,behavior:"instant"});});});
+document.getElementById("calc").addEventListener("click",()=>document.querySelector('nav.tabs button[data-view="r"]').click());
+document.getElementById("clear").addEventListener("click",()=>{answers={};saveAns();renderQuestionnaire();});
+
+const msg=document.getElementById("editorMsg");
+function showMsg(t,ok){msg.className="msg "+(ok?"ok":"err");msg.textContent=t;}
+document.getElementById("loadItems").addEventListener("click",()=>{
+  document.getElementById("itemsJson").value=JSON.stringify({items:ITEMS,traits:TRAITS},null,1);showMsg("Huidige dataset geladen.",true);});
+document.getElementById("applyItems").addEventListener("click",()=>{try{
+  const p=JSON.parse(document.getElementById("itemsJson").value);
+  if(!Array.isArray(p.items))throw new Error("'items' ontbreekt of is geen lijst.");
+  const ok=k=>["dopamine","acetylcholine","gaba","serotonine"].includes(k);
+  p.items.forEach((it,i)=>{if(it.part!=="A"&&it.part!=="B")throw new Error(`item ${i}: part moet A of B zijn.`);
+    if(!ok(it.cat))throw new Error(`item ${i}: onbekende cat '${it.cat}'.`);
+    if(typeof it.text!=="string"||!it.text.trim())throw new Error(`item ${i}: text ontbreekt.`);});
+  ITEMS=p.items;if(p.traits)TRAITS=p.traits;answers={};
+  saveLS(LS_ITEMS,ITEMS);saveLS(LS_TRAITS,TRAITS);saveAns();
+  renderQuestionnaire();showMsg(`Toegepast: ${ITEMS.length} items. Antwoorden gereset.`,true);
+}catch(e){showMsg("Fout: "+e.message,false);}});
+document.getElementById("exportItems").addEventListener("click",()=>{
+  const d=JSON.stringify({items:ITEMS,traits:TRAITS},null,1),b=new Blob([d],{type:"application/json"});
+  const a=document.createElement("a");a.href=URL.createObjectURL(b);a.download="neuro4-items.json";a.click();URL.revokeObjectURL(a.href);});
+document.getElementById("resetItems").addEventListener("click",()=>{
+  ITEMS=DEFAULT_ITEMS.slice();TRAITS=JSON.parse(JSON.stringify(DEFAULT_TRAITS));answers={};
+  saveLS(LS_ITEMS,ITEMS);saveLS(LS_TRAITS,TRAITS);saveAns();
+  document.getElementById("itemsJson").value=JSON.stringify({items:ITEMS,traits:TRAITS},null,1);
+  renderQuestionnaire();showMsg("Teruggezet naar de originele 315 items.",true);});
+
+renderQuestionnaire();
+</script>
+</body>
+</html>
