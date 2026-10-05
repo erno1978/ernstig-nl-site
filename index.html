@@ -11,6 +11,7 @@
   var isCom=/(^|\.)ernstig\.com$/.test(location.hostname)||new URLSearchParams(location.search).get('domain')==='com';
   if(isCom){
     document.documentElement.classList.add('com');
+    document.documentElement.lang='en';
     document.querySelector('meta[name="theme-color"]').setAttribute('content','#0f9b6e');
   }
 })();
@@ -28,7 +29,9 @@ body{
   padding:env(safe-area-inset-top,0px) env(safe-area-inset-right,0px) env(safe-area-inset-bottom,0px) env(safe-area-inset-left,0px);
 }
 /* De stage bepaalt de schaal: alles erbinnen is in cqi (procent van deze breedte) */
-.stage{width:min(94vw,133svh,820px);container-type:inline-size;display:flex;justify-content:center}
+.stage{width:min(94vw,133svh,820px);container-type:inline-size;display:flex;flex-direction:column;align-items:center;gap:5cqi}
+.tagline{margin:0;font-family:'Erno2024','Comic Sans MS',cursive;font-size:4.6cqi;line-height:1.2;color:#1b1f2a;text-align:center;transform:rotate(3.5deg)}
+:root.com .t-nl,:root:not(.com) .t-com{display:none}
 .sticker{
   position:relative;
   isolation:isolate;
@@ -66,6 +69,7 @@ body{
 </span>
 </div>
 </div>
+<p class="tagline"><span class="t-nl" lang="nl">Leuk dat je er bent! :-)</span><span class="t-com" lang="en">Nice to see you! :-)</span></p>
 </main>
 </body>
 </html>
